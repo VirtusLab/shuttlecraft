@@ -1,0 +1,74 @@
+version	3
+schemas	default	id	default
+		projects	shuttlecraft	id	shuttlecraft
+				modules	core	id	core
+						kind	Library
+						main	None
+						plugin	None
+						manifest	
+						compiler	projectId	scala
+							moduleId	compiler
+							intransitive	true
+							hidden	false
+						after	guillotine/core	projectId	guillotine
+								moduleId	core
+								intransitive	false
+								hidden	false
+							scalaj-http/core	projectId	scalaj-http
+								moduleId	core
+								intransitive	false
+								hidden	false
+						params	
+						sources	src	src
+						binaries	com.lihaoyi:ujson_2.12:0.7.1	binRepo	central
+								group	com.lihaoyi
+								artifact	ujson_2.12
+								version	0.7.1
+						resources	
+						bloopSpec	None
+					demo	id	demo
+						kind	Application
+						main	Some	shuttlecraft.Demo
+						plugin	None
+						manifest	
+						compiler	projectId	scala
+							moduleId	compiler
+							intransitive	true
+							hidden	false
+						after	shuttlecraft/core	projectId	shuttlecraft
+								moduleId	core
+								intransitive	false
+								hidden	false
+						params	
+						sources	demo	demo
+						binaries	
+						resources	
+						bloopSpec	None
+				main	Some	demo
+				license	unknown
+				description	
+				compiler	None
+		repos	.scala	id	.scala
+				repo	git@github.com:propensive/.scala.git
+				track	master
+				commit	94e03663a05fa2568b31e4315dea1e0d94513cc0
+				local	None
+			platform	id	platform
+				repo	git@github.com:propensive/platform.git
+				track	master
+				commit	e996234c57544932516f903c4511a35efdeab3a0
+				local	None
+			scalaj-http.fury	id	scalaj-http.fury
+				repo	git@github.com:odisseus/scalaj-http.fury.git
+				track	master
+				commit	04ff9ed7531101d607ad00aabef5abcadf7548ad
+				local	None
+		imports	.scala:scala-2.12.8	repo	.scala
+				schema	scala-2.12.8
+			platform:default	repo	platform
+				schema	default
+			scalaj-http.fury:default	repo	scalaj-http.fury
+				schema	default
+		main	Some	shuttlecraft
+main	default
+aliases	
