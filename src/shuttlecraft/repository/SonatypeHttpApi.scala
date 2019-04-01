@@ -1,4 +1,4 @@
-package repository
+package shuttlecraft.repository
 
 import java.util.Base64
 

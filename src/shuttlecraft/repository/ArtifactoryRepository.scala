@@ -1,11 +1,11 @@
-package repository
+package shuttlecraft.repository
 
 import java.io.File
 import java.net.{URI, URL}
 import java.nio.file.Path
 
 import shuttlecraft._
-import repository.NexusRepository._
+import NexusRepository._
 
 import scala.util.Try
 

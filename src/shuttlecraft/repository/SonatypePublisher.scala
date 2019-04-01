@@ -1,4 +1,4 @@
-package repository
+package shuttlecraft.repository
 
 import java.math.BigInteger
 import java.nio.file.{Files, Path, Paths}

@@ -2,7 +2,7 @@ package shuttlecraft
 
 import java.nio.file.Paths
 
-import repository._
+import shuttlecraft.repository._
 
 object Demo {
   def main(args: Array[String]): Unit = {
