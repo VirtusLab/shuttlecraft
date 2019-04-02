@@ -2,12 +2,11 @@
 ## A small library for deploying your artifacts to the remote repository
 
 Supported remote repositories:
-* Nexus snapshots
-* Nexus releases (with the staging flow)
+* Maven2 (including Nexus and Artifactory)
 
 Soon to be supported:
-* Artifactory
-* Local directory
+* Nexus release staging
+* Publishing to a local directory (e. g. `~/.m2`)
 
 ## Usage
 
@@ -16,7 +15,7 @@ See [Demo.scala](https://github.com/odisseus/shuttlecraft/blob/master/demo/Demo.
 ```scala
 implicit val dir = Paths.get(System.getProperty("fury.sharedDir"))
 
-val jar = Paths.get("target", "shuttlecraft.jar")
+val jar = Paths.get("target", "shuttlecraft-demo.jar")
 
 val artifact = Artifact(
   groupId = "com.example",
@@ -30,11 +29,16 @@ val artifact = Artifact(
   jar = jar
 )
 
-val repo = new NexusRepository(
-  uri = "http://localhost:8082/repository/maven-releases/",
-  snapshotUri = "http://localhost:8082/repository/maven-snapshots/"
+val mvnApi = new Maven2HttpApi(
+  repositoryUrl = "http://localhost:8081/nexus/content/repositories/snapshots/",
+  username = "admin",
+  password = "admin123"
 )
 
-repo.publish(artifact, credentials = "admin" -> "admin123")
+val bar = new Maven2ResourceFactory(gpgPassphrase = None, signed = false)
+
+val publisher = new Maven2Publisher(mvnApi, resourceGen)
+
+publisher.publish(artifact).recover{ case NonFatal(e) => e.printStackTrace }
 ```
 

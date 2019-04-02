@@ -1,35 +1,18 @@
 package shuttlecraft.repository
 
-import java.util.Base64
-
-import scala.concurrent.duration._
-import scalaj.http.{BaseHttp, HttpOptions, HttpRequest, HttpResponse}
+import scalaj.http.{HttpOptions, HttpRequest, HttpResponse}
+import shuttlecraft.http.HttpHeaders._
+import shuttlecraft.http.PatientHttp
 
 // Based on https://github.com/lihaoyi/mill
 
-object PatientHttp
-    extends BaseHttp(
-      options = Seq(
-        HttpOptions.connTimeout(5.seconds.toMillis.toInt),
-        HttpOptions.readTimeout(1.minute.toMillis.toInt),
-        HttpOptions.followRedirects(false)
-      )
-    )
-
-class SonatypeHttpApi(uri: String, credentials: String) {
-
-  private val base64Creds = base64(credentials)
-
-  private val commonHeaders = Seq(
-    "Authorization" -> s"Basic $base64Creds",
-    "Accept" -> "application/json",
-    "Content-Type" -> "application/json"
-  )
+class SonatypeStagingApi(val baseUri: String, username: String, password: String) {
+  //FIXME test if this still works at all
 
   // https://oss.sonatype.org/nexus-staging-plugin/default/docs/path__staging_profiles.html
   def getStagingProfileUri(groupId: String): String = {
     val response = withRetry(
-      PatientHttp(s"$uri/staging/profiles").headers(commonHeaders))
+      PatientHttp(s"$baseUri/staging/profiles").withJson.withBasicAuth(username, password))
         .throwError
 
     val resourceUri =
@@ -47,9 +30,9 @@ class SonatypeHttpApi(uri: String, credentials: String) {
   }
 
   def getStagingRepoState(stagingRepoId: String): String = {
-    val response = PatientHttp(s"${uri}/staging/repository/${stagingRepoId}")
+    val response = PatientHttp(s"${baseUri}/staging/repository/${stagingRepoId}")
       .option(HttpOptions.readTimeout(60000))
-      .headers(commonHeaders)
+      .withJson.withBasicAuth(username, password)
       .asString
       .throwError
 
@@ -59,7 +42,7 @@ class SonatypeHttpApi(uri: String, credentials: String) {
   // https://oss.sonatype.org/nexus-staging-plugin/default/docs/path__staging_profiles_-profileIdKey-_start.html
   def createStagingRepo(profileUri: String, groupId: String): String = {
     val response = withRetry(PatientHttp(s"${profileUri}/start")
-      .headers(commonHeaders)
+      .withJson.withBasicAuth(username, password)
       .postData(
         s"""{"data": {"description": "fresh staging profile for ${groupId}"}}"""))
       .throwError
@@ -71,7 +54,7 @@ class SonatypeHttpApi(uri: String, credentials: String) {
   def closeStagingRepo(profileUri: String, repositoryId: String): Boolean = {
     val response = withRetry(
       PatientHttp(s"${profileUri}/finish")
-        .headers(commonHeaders)
+        .withJson.withBasicAuth(username, password)
         .postData(
           s"""{"data": {"stagedRepositoryId": "${repositoryId}", "description": "closing staging repository"}}"""
         ))
@@ -83,7 +66,7 @@ class SonatypeHttpApi(uri: String, credentials: String) {
   def promoteStagingRepo(profileUri: String, repositoryId: String): Boolean = {
     val response = withRetry(
       PatientHttp(s"${profileUri}/promote")
-        .headers(commonHeaders)
+        .withJson.withBasicAuth(username, password)
         .postData(
           s"""{"data": {"stagedRepositoryId": "${repositoryId}", "description": "promote staging repository"}}"""
         ))
@@ -95,26 +78,12 @@ class SonatypeHttpApi(uri: String, credentials: String) {
   def dropStagingRepo(profileUri: String, repositoryId: String): Boolean = {
     val response = withRetry(
       PatientHttp(s"${profileUri}/drop")
-        .headers(commonHeaders)
+        .withJson.withBasicAuth(username, password)
         .postData(
           s"""{"data": {"stagedRepositoryId": "${repositoryId}", "description": "drop staging repository"}}"""
         ))
 
     response.code == 201
-  }
-
-  private val uploadTimeout = 5.minutes.toMillis.toInt
-
-  def upload(uri: String, data: Array[Byte]): HttpResponse[String] = {
-    PatientHttp(uri)
-      .option(HttpOptions.readTimeout(uploadTimeout))
-      .method("PUT")
-      .headers(
-        "Content-Type" -> "application/binary",
-        "Authorization" -> s"Basic ${base64Creds}"
-      )
-      .put(data)
-      .asString
   }
 
   private def withRetry(request: HttpRequest,
@@ -127,8 +96,5 @@ class SonatypeHttpApi(uri: String, credentials: String) {
       resp
     }
   }
-
-  private def base64(s: String) =
-    new String(Base64.getEncoder.encode(s.getBytes))
 
 }

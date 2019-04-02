@@ -2,14 +2,16 @@ package shuttlecraft
 
 import java.nio.file.Paths
 
-import shuttlecraft.repository._
+import shuttlecraft.repository.maven2._
+
+import scala.util.control.NonFatal
 
 object Demo {
   def main(args: Array[String]): Unit = {
 
     implicit val dir = Paths.get(System.getProperty("fury.sharedDir"))
 
-    val jar = Paths.get("target", "shuttlecraft.jar")
+    val jar = Paths.get("target", "shuttlecraft-demo.jar")
 
     val artifact = Artifact(
       groupId = "com.example",
@@ -23,11 +25,16 @@ object Demo {
       jar = jar
     )
 
-    val repo = new NexusRepository(
-      uri = "http://localhost:8082/repository/maven-releases/",
-      snapshotUri = "http://localhost:8082/repository/maven-snapshots/"
+    val mvnApi = new Maven2HttpApi(
+      repositoryUrl = "http://localhost:8081/nexus/content/repositories/snapshots/",
+      username = "admin",
+      password = "admin123"
     )
 
-    repo.publish(artifact, credentials = "admin" -> "admin123")
+    val resourceGen = new Maven2ResourceFactory(gpgPassphrase = None, signed = false)
+
+    val publisher = new Maven2Publisher(mvnApi, resourceGen)
+
+    publisher.publish(artifact).recover{ case NonFatal(e) => e.printStackTrace }
   }
 }
