@@ -16,7 +16,10 @@ class Maven2Publisher(api: Maven2HttpApi, resourceFactory: Maven2ResourceFactory
   def publish(artifact: Artifact)(implicit workingDir: Path): Try[Unit] = {
     for{
       allResources <- resourceFactory.prepareAllResources(artifact)
-      publishResults <- api.uploadAll(allResources)
+      publishResults <- api.uploadAll(allResources.filterNot{res =>
+        //FIXME see https://stackoverflow.com/a/34020634
+        api.repositoryUrl.contains("artifactory") && Set(".md5", ".sha1").exists(res.locator.endsWith)
+      })
       _ <- reportPublishResults(publishResults, artifact)
     } yield ()
   }
