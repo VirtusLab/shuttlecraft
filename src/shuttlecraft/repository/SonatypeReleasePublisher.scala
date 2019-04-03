@@ -4,14 +4,13 @@ import scalaj.http.HttpResponse
 import shuttlecraft._
 import shuttlecraft.publishing.Resource
 import shuttlecraft.repository.maven2.{Maven2HttpApi, Maven2ResourceFactory}
+import com.typesafe.scalalogging.Logger
 
 // Based on https://github.com/lihaoyi/mill
 
 class SonatypeReleasePublisher(val baseUri: String, username: String, password: String, resourceFactory: Maven2ResourceFactory) {
 
-  object log{
-    def info(msg: String) = println(msg)
-  }
+  val log = Logger[SonatypeReleasePublisher]
 
   private def publishRelease(release: Boolean,
                              payloads: Seq[Resource],

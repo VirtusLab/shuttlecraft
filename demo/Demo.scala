@@ -3,11 +3,13 @@ package shuttlecraft
 import java.nio.file.Paths
 
 import shuttlecraft.repository.maven2._
-
+import com.typesafe.scalalogging.Logger
 import scala.util.control.NonFatal
 
 object Demo {
   def main(args: Array[String]): Unit = {
+
+    val log = Logger("main")
 
     implicit val dir = Paths.get(System.getProperty("fury.sharedDir"))
 
@@ -35,6 +37,6 @@ object Demo {
 
     val publisher = new Maven2Publisher(mvnApi, resourceGen)
 
-    publisher.publish(artifact).recover{ case NonFatal(e) => e.printStackTrace }
+    publisher.publish(artifact).recover{ case NonFatal(e) => log.error("Failed to publish the artifact", e) }
   }
 }

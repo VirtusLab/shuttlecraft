@@ -28,6 +28,10 @@ schemas	default	id	default
 								group	com.lihaoyi
 								artifact	ujson_2.12
 								version	0.7.1
+							com.typesafe.scala-logging:scala-logging_2.12:3.9.0	binRepo	central
+								group	com.typesafe.scala-logging
+								artifact	scala-logging_2.12
+								version	3.9.0
 						resources	
 						bloopSpec	None
 					demo	id	demo
@@ -45,7 +49,10 @@ schemas	default	id	default
 								hidden	false
 						params	
 						sources	demo	demo
-						binaries	
+						binaries	ch.qos.logback:logback-classic:1.2.3	binRepo	central
+								group	ch.qos.logback
+								artifact	logback-classic
+								version	1.2.3
 						resources	
 						bloopSpec	None
 				main	Some	demo

@@ -4,14 +4,12 @@ import java.nio.file.Path
 
 import scalaj.http.HttpResponse
 import shuttlecraft.Artifact
-
+import com.typesafe.scalalogging.Logger
 import scala.util.{Failure, Success, Try}
 
 class Maven2Publisher(api: Maven2HttpApi, resourceFactory: Maven2ResourceFactory) {
 
-  object log {
-    def info(msg: String) = println(msg)
-  }
+  val log = Logger[Maven2Publisher]
 
   def publish(artifact: Artifact)(implicit workingDir: Path): Try[Unit] = {
     for{

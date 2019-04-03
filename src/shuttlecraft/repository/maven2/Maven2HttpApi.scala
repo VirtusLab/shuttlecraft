@@ -4,15 +4,13 @@ import scalaj.http.{HttpOptions, HttpResponse}
 import shuttlecraft.http.HttpHeaders._
 import shuttlecraft.http.PatientHttp
 import shuttlecraft.publishing.Resource
-
+import com.typesafe.scalalogging.Logger
 import scala.concurrent.duration._
 import scala.util.Try
 
 class Maven2HttpApi(val repositoryUrl: String, username: String, password: String) {
 
-  object log {
-    def info(msg: String) = println(msg)
-  }
+  val log = Logger[Maven2HttpApi]
 
   private val uploadTimeout = 5.minutes.toMillis.toInt
 

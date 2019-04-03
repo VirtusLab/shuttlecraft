@@ -39,6 +39,6 @@ val bar = new Maven2ResourceFactory(gpgPassphrase = None, signed = false)
 
 val publisher = new Maven2Publisher(mvnApi, resourceGen)
 
-publisher.publish(artifact).recover{ case NonFatal(e) => e.printStackTrace }
+publisher.publish(artifact).recover{ case NonFatal(e) => log.error("Failed to publish the artifact", e) }
 ```
 
