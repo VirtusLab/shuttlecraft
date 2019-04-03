@@ -14,6 +14,10 @@ schemas	default	id	default
 								moduleId	core
 								intransitive	false
 								hidden	false
+							mercator/core	projectId	mercator
+								moduleId	core
+								intransitive	false
+								hidden	false
 							scalaj-http/core	projectId	scalaj-http
 								moduleId	core
 								intransitive	false

@@ -2,10 +2,11 @@ package shuttlecraft.repository.maven2
 
 import java.nio.file.Path
 
+import mercator._
 import shuttlecraft._
 import shuttlecraft.publishing.{FileResource, Resource}
 
-import scala.util.{Success, Try}
+import scala.util.Try
 
 class Maven2ResourceFactory(
                        gpgPassphrase: Option[String],
@@ -49,13 +50,7 @@ class Maven2ResourceFactory(
 
   private def signatures(resources: Seq[Resource])(implicit workingDir: Path): Try[Seq[Resource]] = {
     val gpg = new Gpg(gpgPassphrase)
-    //TODO traverse
-    resources.map(gpg.signature(_)).foldLeft[Try[Seq[Resource]]](Success(Seq.empty)){ case(prev, cur) =>
-      for{
-        seq <- prev
-        res <- cur
-      } yield seq :+ res
-    }
+    resources.traverse(gpg.signature(_))
   }
 
 }
