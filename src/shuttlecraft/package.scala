@@ -27,6 +27,8 @@ package object shuttlecraft{
                      jar: Jar
                      ) {
     def isSnapshot: Boolean = version.isSnapshot
+
+    override def toString: ArtifactId = s"$groupId:$artifactId:$version"
   }
 
   trait Repository[Credentials]{

@@ -67,7 +67,7 @@ schemas	default	id	default
 			platform	id	platform
 				repo	git@github.com:propensive/platform.git
 				track	master
-				commit	e996234c57544932516f903c4511a35efdeab3a0
+				commit	58e4963d98007da74593ff0ee74c654e63663dd2
 				local	None
 			scalaj-http.fury	id	scalaj-http.fury
 				repo	git@github.com:odisseus/scalaj-http.fury.git

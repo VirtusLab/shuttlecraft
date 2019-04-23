@@ -18,7 +18,7 @@ class Maven2HttpApi(val repositoryUrl: String, username: String, password: Strin
 
   def uploadAll(resources: Seq[Resource]): Try[Seq[HttpResponse[String]]] = Try {
     resources.map { resource =>
-      log.info(s"Uploading ${resource.locator}")
+      log.debug(s"Uploading ${resource.locator}")
       upload(resource)
     }
   }

@@ -2,6 +2,7 @@ package shuttlecraft.repository
 
 import scalaj.http.HttpResponse
 import shuttlecraft._
+import shuttlecraft.progress._
 import shuttlecraft.publishing.Resource
 import shuttlecraft.repository.maven2.{Maven2HttpApi, Maven2ResourceFactory}
 import com.typesafe.scalalogging.Logger
@@ -17,6 +18,8 @@ class SonatypeReleasePublisher(val baseUri: String, username: String, password: 
                              stagingProfile: String,
                              artifacts: Seq[Artifact]): Unit = {
 
+    artifacts.progress(s"Publishing to $baseUri")
+
     val stagingApi = new SonatypeStagingApi(baseUri, username, password)
 
     val profileUri = stagingApi.getStagingProfileUri(stagingProfile)
@@ -27,35 +30,35 @@ class SonatypeReleasePublisher(val baseUri: String, username: String, password: 
     val releaseApi = new Maven2HttpApi(releaseUri, username, password)
 
     val publishResults = payloads.map{resource =>
-      log.info(s"Uploading ${resource.locator}")
+      artifacts.progress(s"Uploading ${resource.locator}")
       releaseApi.upload(resource)
     }
     reportPublishResults(publishResults, artifacts)
 
     if (release) {
-      log.info("Closing staging repository")
+      log.debug("Closing staging repository")
       stagingApi.closeStagingRepo(profileUri, stagingRepoId)
 
-      log.info("Waiting for staging repository to close")
+      log.debug("Waiting for staging repository to close")
       awaitRepoStatus("closed", stagingApi, stagingRepoId)
 
-      log.info("Promoting staging repository")
+      log.debug("Promoting staging repository")
       stagingApi.promoteStagingRepo(profileUri, stagingRepoId)
 
-      log.info("Waiting for staging repository to release")
+      log.debug("Waiting for staging repository to release")
       awaitRepoStatus("released", stagingApi, stagingRepoId)
 
-      log.info("Dropping staging repository")
+      log.debug("Dropping staging repository")
       stagingApi.dropStagingRepo(profileUri, stagingRepoId)
 
-      log.info(s"Published ${artifacts.map(_.artifactId).mkString(", ")} successfully")
+      artifacts.progress(s"Published successfully")
     }
   }
 
   private def reportPublishResults(publishResults: Seq[HttpResponse[String]],
                                    artifacts: Seq[Artifact]) = {
     if (publishResults.forall(_.is2xx)) {
-      log.info(s"Published ${artifacts.map(_.artifactId).mkString(", ")} to Sonatype")
+      artifacts.progress(s"Published to Sonatype")
     } else {
       val errors = publishResults.filterNot(_.is2xx).map { response =>
         s"Code: ${response.code}, message: ${response.body}"
