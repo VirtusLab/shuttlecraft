@@ -34,6 +34,9 @@ schemas	default	id	default
 								version	3.9.0
 						resources	
 						bloopSpec	None
+						environment	
+						properties	
+						policy	
 					demo	id	demo
 						kind	Application
 						main	Some	shuttlecraft.Demo
@@ -55,6 +58,20 @@ schemas	default	id	default
 								version	1.2.3
 						resources	
 						bloopSpec	None
+						environment	
+						properties	
+						policy	java.io.FilePermission ${fury.sharedDir}/- read,write,delete	className	java.io.FilePermission
+								target	${fury.sharedDir}/-
+								action	Some	read,write,delete
+							java.io.FilePermission target/- read,write,delete	className	java.io.FilePermission
+								target	target/-
+								action	Some	read,write,delete
+							java.net.SocketPermission localhost:8081 connect,resolve	className	java.net.SocketPermission
+								target	localhost:8081
+								action	Some	connect,resolve
+							java.util.PropertyPermission fury.sharedDir read	className	java.util.PropertyPermission
+								target	fury.sharedDir
+								action	Some	read
 				main	Some	demo
 				license	unknown
 				description	
