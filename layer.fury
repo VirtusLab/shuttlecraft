@@ -79,12 +79,12 @@ schemas	default	id	default
 		repos	.scala	id	.scala
 				repo	git@github.com:propensive/.scala.git
 				track	master
-				commit	94e03663a05fa2568b31e4315dea1e0d94513cc0
+				commit	b5a210a5e2b9ba713753850037c3f6136466ccfc
 				local	None
 			platform	id	platform
 				repo	git@github.com:propensive/platform.git
 				track	master
-				commit	58e4963d98007da74593ff0ee74c654e63663dd2
+				commit	d1e7aae5000e1efe92b2bde48bdb82c6064c7e06
 				local	None
 			scalaj-http.fury	id	scalaj-http.fury
 				repo	git@github.com:odisseus/scalaj-http.fury.git
